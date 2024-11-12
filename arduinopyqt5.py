@@ -51,7 +51,7 @@ class MainWindow(QMainWindow):  # QMainWindow를 상속받아 MainWindow 클래�
         self.setWindowTitle("Arduino Test") 
         self.setStyleSheet("""
             QWidget {
-                background-color: #bfd2e0; /* 배경색 설정 */
+                background-color: #a5cae6; /* 배경색 설정 */
                 }
                 """) # 윈도우 제목 설정
         self.setFocusPolicy(Qt.StrongFocus)  # 키 이벤트를 받기 위해 포커스 정책 설정 즉 위젯이 탭 키와 마우스 클릭을 통해 포커스를 받을 수 있습니다.
@@ -59,7 +59,13 @@ class MainWindow(QMainWindow):  # QMainWindow를 상속받아 MainWindow 클래�
         main_layout = QVBoxLayout()
 
         # QLabel 위젯 생성 및 설정
-        label = QLabel("Arduino Test")  # "Arduino Test" 텍스트를 가진 QLabel 생성
+        label = QLabel("Arduino Test")
+        label.setStyleSheet("""
+            QLabel {
+            font-size: 24px; /* 글자 크기 */
+            color: #ededf0; /* 글자 색상 */
+            }
+        """) # "Arduino Test" 텍스트를 가진 QLabel 생성
         label.setAlignment(Qt.AlignTop | Qt.AlignHCenter)  # 텍스트를 상단 중앙에 정렬
         label.setFixedHeight(30)  # QLabel의 높이를 30으로 설정
         main_layout.addWidget(label)  # QLabel을 레이아웃의 첫 번째 위젯으로 추가
