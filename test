@@ -1,0 +1,55 @@
+import sys
+from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QVBoxLayout, QWidget, QPushButton, QHBoxLayout
+from PyQt5.QtCore import Qt
+from urllib.request import urlopen
+
+class MainWindow(QMainWindow):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle("Arduino Test")
+        self.setFocusPolicy(Qt.StrongFocus)
+
+        # 메인 레이아웃 생성
+        main_layout = QVBoxLayout()
+        label = QLabel("Arduino Test")
+        label.setAlignment(Qt.AlignTop | Qt.AlignHCenter)
+        label.setFixedHeight(30)
+        main_layout.addWidget(label)
+
+        # 제어 버튼 레이아웃 생성
+        control_layout = QHBoxLayout()
+        controls = {"Turn left": "turn_left", "left": "left", "forward": "forward", 
+                    "backward": "backward", "stop": "stop", "right": "right", "Turn right": "turn_right"}
+
+        # 각 제어 버튼 생성 및 pressed/released 기능 추가
+        for control_text, command in controls.items():
+            button = QPushButton(control_text)
+            button.pressed.connect(lambda cmd=command: self.on_control_pressed(cmd))
+            button.released.connect(lambda cmd=command: self.on_control_released(cmd))
+            control_layout.addWidget(button)
+
+        main_layout.addLayout(control_layout)
+        container = QWidget()
+        container.setLayout(main_layout)
+        self.setCentralWidget(container)
+
+    def on_control_pressed(self, command):
+        print(f"{command} pressed")
+        self.send_command_to_arduino(command)
+
+    def on_control_released(self, command):
+        print(f"{command} released")
+        if command != "stop":  # stop을 제외하고 버튼을 떼면 정지 명령을 보냄
+            self.send_command_to_arduino("stop")
+
+    def send_command_to_arduino(self, command):
+        ip = '192.168.137.84'
+        print(f"Sending command to Arduino: {command}")
+        urlopen(f'http://{ip}/action?go={command}')
+
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    window = MainWindow()
+    window.resize(600, 400)
+    window.show()
+    sys.exit(app.exec_())

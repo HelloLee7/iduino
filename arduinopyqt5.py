@@ -40,9 +40,9 @@ class YOLOWindow(QDialog):  # QDialog를 상속받아 YOLOWindow 클래스 정�
         if thread_frame is not None:
             # OpenCV 이미지를 QImage로 변환
             height, width, channel = thread_frame.shape
-            bytes_per_line = 3 * width
+            bytes_per_line = 3 * width #픽셀 당 3바이트를 사용하므로 3 * width로 계산
             q_img = QImage(thread_frame.data, width, height, bytes_per_line, QImage.Format_RGB888).rgbSwapped()
-            self.label.setPixmap(QPixmap.fromImage(q_img))
+            self.label.setPixmap(QPixmap.fromImage(q_img))  
 
 class MainWindow(QMainWindow):  # QMainWindow를 상속받아 MainWindow 클래스 정의
     def __init__(self):  # 클래스 초기화 메서드
@@ -58,6 +58,13 @@ class MainWindow(QMainWindow):  # QMainWindow를 상속받아 MainWindow 클래�
         label.setAlignment(Qt.AlignTop | Qt.AlignHCenter)  # 텍스트를 상단 중앙에 정렬
         label.setFixedHeight(30)  # QLabel의 높이를 30으로 설정
         main_layout.addWidget(label)  # QLabel을 레이아웃의 첫 번째 위젯으로 추가
+
+
+        new_button_layout = QHBoxLayout()
+        new_button = QPushButton("haal")  # "New Button" 텍스트를 가진 QPushButton 생성
+        new_button.clicked.connect(self.on_new_button_clicked)  # 버튼 클릭 시 on_new_button_clicked 메서드 호출
+        new_button_layout.addWidget(new_button)  # 버튼을 레이아웃에 추가
+        main_layout.addLayout(new_button_layout)  # 메인 레이아웃에 새로운 버튼 레이아웃 추가
 
         # Open YOLO 버튼 레이아웃 생성
         openyolo_layout = QHBoxLayout()
@@ -86,13 +93,14 @@ class MainWindow(QMainWindow):  # QMainWindow를 상속받아 MainWindow 클래�
 
         # 제어 버튼 생성 및 설정
         controls = ["Turn left", "left", "forward", "backward", "stop", "right", "Turn right"]  # 제어 버튼에 사용할 명령 리스트
+# 제어 버튼 생성 및 설정
         for control in controls:  # 각 명령에 대해 반복
             button = QPushButton(control)  # 명령을 가진 QPushButton 생성
-            button.clicked.connect(lambda checked, c=control: self.on_control_button_clicked(c))  # 버튼 클릭 시 on_control_button_clicked 메서드 호출
+            button.pressed.connect(lambda c=control: self.on_control_button_pressed(c))  # 버튼 누를 때 호출
+            button.released.connect(lambda: self.on_control_button_released())  # 버튼 뗄 때 호출
             control_layout.addWidget(button)  # 버튼을 제어 버튼 레이아웃에 추가
+        main_layout.addLayout(control_layout)  # 메인 레이아웃에 제어 버튼 레이아웃 추가
 
-        # 메인 레이아웃에 제어 버튼 레이아웃 추가
-        main_layout.addLayout(control_layout)
 
         # 중앙 위젯 설정
         container = QWidget()  # 중앙 위젯 생성
@@ -100,23 +108,34 @@ class MainWindow(QMainWindow):  # QMainWindow를 상속받아 MainWindow 클래�
         self.setCentralWidget(container)  # 중앙 위젯을 메인 윈도우의 중앙 위젯으로 설정
 
         # 스트리밍 데이터 읽기 스레드 시작
-        self.streaming_thread = threading.Thread(target=self.read_stream)  # read_stream 메서드를 실행하는 스레드 생성
-        self.streaming_thread.daemon = True  # 스레드를 데몬 스레드로 설정
-        self.streaming_thread.start()  # 스레드 시작
+        # self.streaming_thread = threading.Thread(target=self.read_stream)  # read_stream 메서드를 실행하는 스레드 생성
+        # self.streaming_thread.daemon = True  # 스레드를 데몬 스레드로 설정
+        # self.streaming_thread.start()  # 스레드 시작
 
     def on_open_yolo_button_clicked(self):  # Open YOLO 버튼 클릭 시 호출되는 메서드
         print("Open YOLO button clicked")  # 클릭된 버튼의 텍스트를 출력
         python_executable = sys.executable  # 현재 사용 중인 Python 실행 파일 경로
         subprocess.Popen([python_executable, "arduinopyqt5yolo.py"])  # 현재 Python 실행 파일을 사용하여 스크립트 실행
 
+    def on_control_button_pressed(self, control):  # 버튼 누를 때 동작
+        print(f"{control.capitalize()} button pressed")
+        self.send_command_to_arduino(control) 
+
+    def on_control_button_released(self):  # 버튼 뗄 때 정지
+        print("Stop button released")
+        self.send_command_to_arduino("stop")
+
 
     def on_speed_button_clicked(self, speed):  # 속도 버튼 클릭 시 호출되는 메서드
         print(f"Speed {speed} button clicked")  # 클릭된 버튼의 속도를 출력
-        # 여기에 시리얼 포트를 통해 명령 전송 코드를 추가할 수 있습니다
+        self.send_command_to_arduino(speed)        # 여기에 시리얼 포트를 통해 명령 전송 코드를 추가할 수 있습니다
 
-    def on_control_button_clicked(self, control):  # 제어 버튼 클릭 시 호출되는 메서드
-        print(f"{control.capitalize()} button clicked")  # 클릭된 버튼의 제어 명령을 출력
-        self.send_command_to_arduino(control)  # 제어 명령을 Arduino로 전송하는 메서드 호출
+    def on_new_button_clicked(self):
+        print("New Button clicked")
+        python_executable = sys.executable  # 현재 사용 중인 Python 실행 파일 경로
+        subprocess.Popen([python_executable, "arduinopyqt5haar.py"])         
+        # 새로운 버튼 클릭 시 수행할 동작을 여기에 추가하세요
+# 제어 명령을 Arduino로 전송하는 메서드 호출
 
     def send_command_to_arduino(self, command):  # 제어 명령을 Arduino로 전송하는 메서드
         ip = '192.168.137.84'  # Arduino의 IP 주소
@@ -142,30 +161,46 @@ class MainWindow(QMainWindow):  # QMainWindow를 상속받아 MainWindow 클래�
             print('정지')  # "정지" 출력
             urlopen('http://' + ip + "/action?go=stop")  # Arduino로 정지 명령 전송
 
-    def read_stream(self):  # 스트리밍 데이터를 읽는 메서드
-        global thread_frame
-        ip = '192.168.137.89'  # Arduino의 IP 주소
-        stream = urlopen('http://' + ip + ':81/stream')  # 스트리밍 데이터를 가져오기 위해 URL 열기
-        buffer = b''  # 스트리밍 데이터를 저장할 버퍼 초기화
+        elif command == "speed: 40":  #  
+            print('40')   
+            urlopen('http://' + ip + "/action?go=40") 
+        elif command == "speed: 50":  #  
+            print('50')   
+            urlopen('http://' + ip + "/action?go=50") 
+        elif command == "speed: 60":  #  
+            print('60')   # 올바른 출력 메시지로 수정
+            urlopen('http://' + ip + "/action?go=60") 
+        elif command == "speed: 80":  #  
+            print('80')   
+            urlopen('http://' + ip + "/action?go=80") 
+        elif command == "speed: 100":  #  
+            print('100')   
+            urlopen('http://' + ip + "/action?go=100")        
+                    
+    # def read_stream(self):  # 스트리밍 데이터를 읽는 메서드
+    #     global thread_frame
+    #     ip = '192.168.137.89'  # Arduino의 IP 주소
+    #     stream = urlopen('http://' + ip + ':81/stream')  # 스트리밍 데이터를 가져오기 위해 URL 열기
+    #     buffer = b''  # 스트리밍 데이터를 저장할 버퍼 초기화
 
-        urlopen('http://' + ip + "/action?go=speed40")  # 초기 속도를 40으로 설정
+    #     urlopen('http://' + ip + "/action?go=speed40")  # 초기 속도를 40으로 설정
 
-        while True:  # 무한 루프
-            buffer += stream.read(4096)  # 스트리밍 데이터 읽기
-            head = buffer.find(b'\xff\xd8')  # JPEG 이미지의 시작을 찾기
-            end = buffer.find(b'\xff\xd9')  # JPEG 이미지의 끝을 찾기
+    #     while True:  # 무한 루프
+    #         buffer += stream.read(4096)  # 스트리밍 데이터 읽기
+    #         head = buffer.find(b'\xff\xd8')  # JPEG 이미지의 시작을 찾기
+    #         end = buffer.find(b'\xff\xd9')  # JPEG 이미지의 끝을 찾기
 
-            try:
-                if head > -1 and end > -1:  # JPEG 이미지가 버퍼에 존재하는지 확인
-                    jpg = buffer[head:end+2]  # JPEG 이미지 데이터를 추출
-                    buffer = buffer[end+2:]  # 추출된 데이터를 버퍼에서 제거
-                    img = cv2.imdecode(np.frombuffer(jpg, dtype=np.uint8), cv2.IMREAD_UNCHANGED)  # JPEG 데이터를 이미지로 디코딩
+    #         try:
+    #             if head > -1 and end > -1:  # JPEG 이미지가 버퍼에 존재하는지 확인
+    #                 jpg = buffer[head:end+2]  # JPEG 이미지 데이터를 추출
+    #                 buffer = buffer[end+2:]  # 추출된 데이터를 버퍼에서 제거
+    #                 img = cv2.imdecode(np.frombuffer(jpg, dtype=np.uint8), cv2.IMREAD_UNCHANGED)  # JPEG 데이터를 이미지로 디코딩
 
-                    # 아래부분의 반만 자르기
-                    height, width, _ = img.shape  # 이미지의 높이와 너비 가져오기
-                    img = img[height // 2:, :]  # 이미지의 아래 부분 절반 자르기
-            except Exception as e:  # 예외 발생 시
-                print(f"Error: {e}")  # 오류 메시지 출력
+    #                 # 아래부분의 반만 자르기
+    #                 height, width, _ = img.shape  # 이미지의 높이와 너비 가져오기
+    #                 img = img[height // 2:, :]  # 이미지의 아래 부분 절반 자르기
+    #         except Exception as e:  # 예외 발생 시
+    #             print(f"Error: {e}")  # 오류 메시지 출력
 
     def keyPressEvent(self, event):
         if event.key() == Qt.Key_W:

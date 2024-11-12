@@ -1,4 +1,3 @@
-
 import sys  # 시스템 관련 기능을 사용하기 위해 임포트
 import threading  # 스레드를 사용하기 위해 임포트
 from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QVBoxLayout, QWidget, QPushButton, QHBoxLayout, QDialog  # PyQt5에서 제공하는 위젯 클래스 임포트
@@ -41,16 +40,16 @@ class YOLOWindow(QDialog):  # QDialog를 상속받아 YOLOWindow 클래스 정�
         if thread_frame is not None:
             # OpenCV 이미지를 QImage로 변환
             height, width, channel = thread_frame.shape
-            bytes_per_line = 3 * width
+            bytes_per_line = 3 * width #픽셀 당 3바이트를 사용하므로 3 * width로 계산
             q_img = QImage(thread_frame.data, width, height, bytes_per_line, QImage.Format_RGB888).rgbSwapped()
-            self.label.setPixmap(QPixmap.fromImage(q_img))
+            self.label.setPixmap(QPixmap.fromImage(q_img))  
 
 class MainWindow(QMainWindow):  # QMainWindow를 상속받아 MainWindow 클래스 정의
     def __init__(self):  # 클래스 초기화 메서드
         super().__init__()  # 부모 클래스의 초기화 메서드 호출
 
         self.setWindowTitle("Arduino Test")  # 윈도우 제목 설정
-
+        self.setFocusPolicy(Qt.StrongFocus)  # 키 이벤트를 받기 위해 포커스 정책 설정
         # 메인 레이아웃 생성
         main_layout = QVBoxLayout()
 
@@ -101,23 +100,24 @@ class MainWindow(QMainWindow):  # QMainWindow를 상속받아 MainWindow 클래�
         self.setCentralWidget(container)  # 중앙 위젯을 메인 윈도우의 중앙 위젯으로 설정
 
         # 스트리밍 데이터 읽기 스레드 시작
-        self.streaming_thread = threading.Thread(target=self.read_stream)  # read_stream 메서드를 실행하는 스레드 생성
-        self.streaming_thread.daemon = True  # 스레드를 데몬 스레드로 설정
-        self.streaming_thread.start()  # 스레드 시작
+        # self.streaming_thread = threading.Thread(target=self.read_stream)  # read_stream 메서드를 실행하는 스레드 생성
+        # self.streaming_thread.daemon = True  # 스레드를 데몬 스레드로 설정
+        # self.streaming_thread.start()  # 스레드 시작
 
     def on_open_yolo_button_clicked(self):  # Open YOLO 버튼 클릭 시 호출되는 메서드
         print("Open YOLO button clicked")  # 클릭된 버튼의 텍스트를 출력
         python_executable = sys.executable  # 현재 사용 중인 Python 실행 파일 경로
         subprocess.Popen([python_executable, "arduinopyqt5yolo.py"])  # 현재 Python 실행 파일을 사용하여 스크립트 실행
 
+    def on_control_button_clicked(self, control):  # 제어 버튼 클릭 시 호출되는 메서드
+        print(f"{control.capitalize()} button clicked")  # 클릭된 버튼의 제어 명령을 출력
+        self.send_command_to_arduino(control) 
 
     def on_speed_button_clicked(self, speed):  # 속도 버튼 클릭 시 호출되는 메서드
         print(f"Speed {speed} button clicked")  # 클릭된 버튼의 속도를 출력
-        # 여기에 시리얼 포트를 통해 명령 전송 코드를 추가할 수 있습니다
+        self.send_command_to_arduino(speed)        # 여기에 시리얼 포트를 통해 명령 전송 코드를 추가할 수 있습니다
 
-    def on_control_button_clicked(self, control):  # 제어 버튼 클릭 시 호출되는 메서드
-        print(f"{control.capitalize()} button clicked")  # 클릭된 버튼의 제어 명령을 출력
-        self.send_command_to_arduino(control)  # 제어 명령을 Arduino로 전송하는 메서드 호출
+# 제어 명령을 Arduino로 전송하는 메서드 호출
 
     def send_command_to_arduino(self, command):  # 제어 명령을 Arduino로 전송하는 메서드
         ip = '192.168.137.84'  # Arduino의 IP 주소
@@ -143,54 +143,67 @@ class MainWindow(QMainWindow):  # QMainWindow를 상속받아 MainWindow 클래�
             print('정지')  # "정지" 출력
             urlopen('http://' + ip + "/action?go=stop")  # Arduino로 정지 명령 전송
 
-    def read_stream(self):  # 스트리밍 데이터를 읽는 메서드
-        global thread_frame
-        ip = '192.168.137.89'  # Arduino의 IP 주소
-        stream = urlopen('http://' + ip + ':81/stream')  # 스트리밍 데이터를 가져오기 위해 URL 열기
-        buffer = b''  # 스트리밍 데이터를 저장할 버퍼 초기화
+        elif command == "40":  #  
+            print('40')   
+            urlopen('http://' + ip + "/action?go=40") 
+        elif command == "50":  #  
+            print('50')   
+            urlopen('http://' + ip + "/action?go=50") 
+        elif command == "60":  #  
+            print('60')   # 올바른 출력 메시지로 수정
+            urlopen('http://' + ip + "/action?go=60") 
+        elif command == "80":  #  
+            print('80')   
+            urlopen('http://' + ip + "/action?go=80") 
+        elif command == "100":  #  
+            print('100')   
+            urlopen('http://' + ip + "/action?go=100")        
+                    
+    # def read_stream(self):  # 스트리밍 데이터를 읽는 메서드
+    #     global thread_frame
+    #     ip = '192.168.137.89'  # Arduino의 IP 주소
+    #     stream = urlopen('http://' + ip + ':81/stream')  # 스트리밍 데이터를 가져오기 위해 URL 열기
+    #     buffer = b''  # 스트리밍 데이터를 저장할 버퍼 초기화
 
-        urlopen('http://' + ip + "/action?go=speed40")  # 초기 속도를 40으로 설정
+    #     urlopen('http://' + ip + "/action?go=speed40")  # 초기 속도를 40으로 설정
 
-        while True:  # 무한 루프
-            buffer += stream.read(4096)  # 스트리밍 데이터 읽기
-            head = buffer.find(b'\xff\xd8')  # JPEG 이미지의 시작을 찾기
-            end = buffer.find(b'\xff\xd9')  # JPEG 이미지의 끝을 찾기
+    #     while True:  # 무한 루프
+    #         buffer += stream.read(4096)  # 스트리밍 데이터 읽기
+    #         head = buffer.find(b'\xff\xd8')  # JPEG 이미지의 시작을 찾기
+    #         end = buffer.find(b'\xff\xd9')  # JPEG 이미지의 끝을 찾기
 
-            try:
-                if head > -1 and end > -1:  # JPEG 이미지가 버퍼에 존재하는지 확인
-                    jpg = buffer[head:end+2]  # JPEG 이미지 데이터를 추출
-                    buffer = buffer[end+2:]  # 추출된 데이터를 버퍼에서 제거
-                    img = cv2.imdecode(np.frombuffer(jpg, dtype=np.uint8), cv2.IMREAD_UNCHANGED)  # JPEG 데이터를 이미지로 디코딩
+    #         try:
+    #             if head > -1 and end > -1:  # JPEG 이미지가 버퍼에 존재하는지 확인
+    #                 jpg = buffer[head:end+2]  # JPEG 이미지 데이터를 추출
+    #                 buffer = buffer[end+2:]  # 추출된 데이터를 버퍼에서 제거
+    #                 img = cv2.imdecode(np.frombuffer(jpg, dtype=np.uint8), cv2.IMREAD_UNCHANGED)  # JPEG 데이터를 이미지로 디코딩
 
-                    # 아래부분의 반만 자르기
-                    height, width, _ = img.shape  # 이미지의 높이와 너비 가져오기
-                    img = img[height // 2:, :]  # 이미지의 아래 부분 절반 자르기
+    #                 # 아래부분의 반만 자르기
+    #                 height, width, _ = img.shape  # 이미지의 높이와 너비 가져오기
+    #                 img = img[height // 2:, :]  # 이미지의 아래 부분 절반 자르기
+    #         except Exception as e:  # 예외 발생 시
+    #             print(f"Error: {e}")  # 오류 메시지 출력
+
+    def keyPressEvent(self, event):
+        if event.key() == Qt.Key_W:
+            print('전진')
+            self.send_command_to_arduino('forward')
+        elif event.key() == Qt.Key_A:
+            print('왼쪽')
+            self.send_command_to_arduino('left')
+        elif event.key() == Qt.Key_D:
+            print('오른쪽')
+            self.send_command_to_arduino('right')
+        elif event.key() == Qt.Key_S:
+            print('후진')
+            self.send_command_to_arduino('backward')
+        elif event.key() == Qt.Key_X:
+            print('정지')
+            self.send_command_to_arduino('stop')
+        else:
+            super().keyPressEvent(event)
 
 
-                    key = cv2.waitKey(1)  # 키 입력 대기
-                    if key == ord('q'):  # 'q' 키를 누르면 루프 종료
-                        urlopen('http://' + ip + "/action?go=stop")  # Arduino로 정지 명령 전송
-                        break
-                    elif key == ord('w'):  # 'w' 키를 누르면 전진 명령 전송
-                        print('전진')
-                        urlopen('http://' + ip + "/action?go=forward")
-                    elif key == ord('a'):  # 'a' 키를 누르면 왼쪽 명령 전송
-                        print('왼쪽')
-                        urlopen('http://' + ip + "/action?go=left")
-                    elif key == ord('d'):  # 'd' 키를 누르면 오른쪽 명령 전송
-                        print('오른쪽')
-                        urlopen('http://' + ip + "/action?go=right")
-                    elif key == ord('s'):  # 's' 키를 누르면 후진 명령 전송
-                        print('후진')
-                        urlopen('http://' + ip + "/action?go=backward")
-                    elif key == ord('A'):  # 'A' 키를 누르면 왼쪽 회전 명령 전송
-                        print('왼쪽 회전')
-                        urlopen('http://' + ip + "/action?go=turn_left")
-                    elif key == ord('D'):  # 'D' 키를 누르면 오른쪽 회전 명령 전송
-                        print('오른쪽 회전')
-                        urlopen('http://' + ip + "/action?go=turn_right")
-            except Exception as e:  # 예외 발생 시
-                print(f"Error: {e}")  # 오류 메시지 출력
 
 if __name__ == "__main__":  # 메인 함수
     app = QApplication(sys.argv)  # 애플리케이션 객체 생성
