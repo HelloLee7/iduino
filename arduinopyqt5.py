@@ -48,8 +48,13 @@ class MainWindow(QMainWindow):  # QMainWindow를 상속받아 MainWindow 클래�
     def __init__(self):  # 클래스 초기화 메서드
         super().__init__()  # 부모 클래스의 초기화 메서드 호출
 
-        self.setWindowTitle("Arduino Test")  # 윈도우 제목 설정
-        self.setFocusPolicy(Qt.StrongFocus)  # 키 이벤트를 받기 위해 포커스 정책 설정
+        self.setWindowTitle("Arduino Test") 
+        self.setStyleSheet("""
+            QWidget {
+                background-color: #bfd2e0; /* 배경색 설정 */
+                }
+                """) # 윈도우 제목 설정
+        self.setFocusPolicy(Qt.StrongFocus)  # 키 이벤트를 받기 위해 포커스 정책 설정 즉 위젯이 탭 키와 마우스 클릭을 통해 포커스를 받을 수 있습니다.
         # 메인 레이아웃 생성
         main_layout = QVBoxLayout()
 
@@ -64,6 +69,27 @@ class MainWindow(QMainWindow):  # QMainWindow를 상속받아 MainWindow 클래�
         new_button = QPushButton("haal")  # "New Button" 텍스트를 가진 QPushButton 생성
         new_button.clicked.connect(self.on_new_button_clicked)  # 버튼 클릭 시 on_new_button_clicked 메서드 호출
         new_button_layout.addWidget(new_button)  # 버튼을 레이아웃에 추가
+        new_button.setStyleSheet("""
+                QPushButton {
+                    background-color: #373eab; 
+                    color: white; 
+                    border: none;
+                    padding: 10px 20px;
+                    text-align: center;
+                    text-decoration: none;
+                    display: inline-block;
+                    font-size: 16px;
+                    margin: 4px 2px;
+                    transition-duration: 0.4s;
+                    cursor: pointer;
+                    border-radius: 10px;
+                }
+                QPushButton:hover {
+                    background-color: white; 
+                    color: black; 
+                    border: 2px solid #696eb8;
+                }
+            """)  
         main_layout.addLayout(new_button_layout)  # 메인 레이아웃에 새로운 버튼 레이아웃 추가
 
         # Open YOLO 버튼 레이아웃 생성
@@ -73,6 +99,27 @@ class MainWindow(QMainWindow):  # QMainWindow를 상속받아 MainWindow 클래�
             button = QPushButton(yolo)  # "Open YOLO" 텍스트를 가진 QPushButton 생성
             button.clicked.connect(self.on_open_yolo_button_clicked)  # 버튼 클릭 시 on_open_yolo_button_clicked 메서드 호출
             openyolo_layout.addWidget(button)  # 버튼을 레이아웃에 추가
+            button.setStyleSheet("""
+                QPushButton {
+                    background-color: #373eab; 
+                    color: white; 
+                    border: none;
+                    padding: 10px 20px;
+                    text-align: center;
+                    text-decoration: none;
+                    display: inline-block;
+                    font-size: 16px;
+                    margin: 4px 2px;
+                    transition-duration: 0.4s;
+                    cursor: pointer;
+                    border-radius: 10px;
+                }
+                QPushButton:hover {
+                    background-color: white; 
+                    color: black; 
+                    border: 2px solid #696eb8;
+                }
+            """)            
         main_layout.addLayout(openyolo_layout)  # 레이아웃을 메인 레이아웃에 추가
 
         # 속도 버튼 레이아웃 생성
@@ -84,7 +131,28 @@ class MainWindow(QMainWindow):  # QMainWindow를 상속받아 MainWindow 클래�
             button = QPushButton(f"speed: {speed}")  # 속도 값을 가진 QPushButton 생성
             button.clicked.connect(lambda checked, s=speed: self.on_speed_button_clicked(s))  # 버튼 클릭 시 on_speed_button_clicked 메서드 호출
             speed_layout.addWidget(button)  # 버튼을 속도 버튼 레이아웃에 추가
-
+            # 버튼 스타일 설정
+            button.setStyleSheet("""
+                QPushButton {
+                    background-color: #4d5ae8; 
+                    color: white; 
+                    border: none;
+                    padding: 10px 20px;
+                    text-align: center;
+                    text-decoration: none;
+                    display: inline-block;
+                    font-size: 16px;
+                    margin: 4px 2px;
+                    transition-duration: 0.4s;
+                    cursor: pointer;
+                    border-radius: 10px;
+                }
+                QPushButton:hover {
+                    background-color: white; 
+                    color: black; 
+                    border: 2px solid #7e84d9;
+                }
+            """)
         # 메인 레이아웃에 속도 버튼 레이아웃 추가
         main_layout.addLayout(speed_layout)
 
@@ -99,6 +167,31 @@ class MainWindow(QMainWindow):  # QMainWindow를 상속받아 MainWindow 클래�
             button.pressed.connect(lambda c=control: self.on_control_button_pressed(c))  # 버튼 누를 때 호출
             button.released.connect(lambda: self.on_control_button_released())  # 버튼 뗄 때 호출
             control_layout.addWidget(button)  # 버튼을 제어 버튼 레이아웃에 추가
+            button.setStyleSheet("""
+                QPushButton {
+                    background-color: #4d5ae8; 
+                    color: white; 
+                    border: none;
+                    padding: 10px 20px;
+                    text-align: center;
+                    text-decoration: none;
+                    display: inline-block;
+                    font-size: 16px;
+                    margin: 4px 2px;
+                    transition-duration: 0.4s;
+                    cursor: pointer;
+                    border-radius: 10px;
+                }
+                QPushButton:hover {
+                    background-color: white; 
+                    color: black; 
+                    border: 2px solid #7e84d9;
+                }
+            """)
+
+
+
+
         main_layout.addLayout(control_layout)  # 메인 레이아웃에 제어 버튼 레이아웃 추가
 
 
