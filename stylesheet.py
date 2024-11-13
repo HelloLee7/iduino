@@ -1,4 +1,4 @@
-def style1():
+def style1(self):
     widget.setStyleSheet("""
         QWidget {
             background-color: #a5cae6; /* 배경색 설정 */
@@ -6,7 +6,7 @@ def style1():
     """)
 
 
-def style2():
+def style2(self):
     label.setStyleSheet("""
         QLabel {
         font-size: 24px; /* 글자 크기 */
