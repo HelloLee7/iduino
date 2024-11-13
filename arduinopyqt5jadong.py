@@ -39,17 +39,19 @@ def yolo_thread():
                     label = detection['name']
                     conf = detection['confidence']
 
-                    if "stop" in label and conf > 0.3:
+                    if "stop" in label and conf > 0.3:                    
                         print("stop")
+                        
                         yolo_state = "stop"
-                    # elif "slow" in label and conf > 0.3:
-                    #     print("slow")
-                    #     yolo_state = "go"
-                    #     urlopen('http://' + ip + "/action?go=speed40")
-                    # elif "speed50" in label and conf > 0.3:
-                    #     print("speed50")
-                    #     yolo_state = "go"
-                    #     urlopen('http://' + ip + "/action?go=speed60")
+
+                    elif "slow" in label and conf > 0.3:
+                        print("slow")
+                        yolo_state = "go"
+                        urlopen('http://' + ip + "/action?go=speed40")
+                    elif "speed50" in label and conf > 0.3:
+                        print("speed50")
+                        yolo_state = "go"
+                        urlopen('http://' + ip + "/action?go=speed60")
 
                     # 박스와 라벨 표시
                     color = [int(c) for c in random.choice(range(256), size=3)]
@@ -76,7 +78,7 @@ def image_process_thread():
                 urlopen('http://' + ip + "/action?go=left")
             elif yolo_state =="stop":
                 urlopen('http://' + ip + "/action?go=stop")
-            
+                
             image_flag = 0
             
 # 데몬 스레드를 생성합니다.
@@ -133,6 +135,7 @@ while True:
                 print("직진")
                 car_state = "go"
 
+
             image_flag = 1
 
             #쓰레드에서 이미지 처리가 완료되었으면
@@ -147,6 +150,12 @@ while True:
     except:
         print("에러")
         pass
+
+# def turn_on_led():
+#     ser = serial.Serial('COM4', 9600)  # 시리얼 포트 설정
+#     time.sleep(0.5)  # 아두이노 초기화 시간 대기
+#     ser.write(b'1')  # LED 켜기
+#     ser.close() 
 
 urlopen('http://' + ip + "/action?go=stop")
 cv2.destroyAllWindows()
