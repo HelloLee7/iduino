@@ -16,7 +16,7 @@ cascade_path = "haarcascade_frontalface_default.xml"
 face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + cascade_path)
 
 # IP 카메라 스트림 설정
-ip = '192.168.137.216'
+ip = '192.168.137.74'
 stream = urlopen('http://' + ip + ':81/stream')
 buffer = b''
 urlopen('http://' + ip + "/action?go=speed40")

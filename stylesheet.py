@@ -1,4 +1,4 @@
-def style1(widget):
+def style1():
     widget.setStyleSheet("""
         QWidget {
             background-color: #a5cae6; /* 배경색 설정 */
@@ -59,7 +59,7 @@ def style4():
             border: 2px solid #696eb8;
         }
     """)
-    
+
 def style5():
     button.setStyleSheet("""
         QPushButton {
