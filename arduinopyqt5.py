@@ -71,33 +71,33 @@ class MainWindow(QMainWindow):  # QMainWindow를 상속받아 MainWindow 클래�
         label.setFixedHeight(30)  # QLabel의 높이를 30으로 설정
         main_layout.addWidget(label)  # QLabel을 레이아웃의 첫 번째 위젯으로 추가
 
-        line_button_layout = QHBoxLayout()
-        line_button = QPushButton("jadong")  # "New Button" 텍스트를 가진 QPushButton 생성
-        line_button.clicked.connect(self.on_jadong_button_clicked)  # 버튼 클릭 시 on_new_button_clicked 메서드 호출
-        line_button_layout.addWidget(line_button)  # 버튼을 레이아웃에 추가
-        line_button.setStyleSheet("""
-            QPushButton {
-                background-color: #373eab; 
-                color: white; 
-                border: none;
-                padding: 10px 20px;
-                text-align: center;
-                text-decoration: none;
-                display: inline-block;
-                font-size: 16px;
-                margin: 4px 2px;
-                transition-duration: 0.4s;
-                cursor: pointer;
-                border-radius: 10px;
-            }
-            QPushButton:hover {
-                background-color: white; 
-                color: black; 
-                border: 2px solid #696eb8;
-            }
-        """)
+        # line_button_layout = QHBoxLayout()
+        # line_button = QPushButton("jadong")  # "New Button" 텍스트를 가진 QPushButton 생성
+        # line_button.clicked.connect(self.on_jadong_button_clicked)  # 버튼 클릭 시 on_new_button_clicked 메서드 호출
+        # line_button_layout.addWidget(line_button)  # 버튼을 레이아웃에 추가
+        # line_button.setStyleSheet("""
+        #     QPushButton {
+        #         background-color: #373eab; 
+        #         color: white; 
+        #         border: none;
+        #         padding: 10px 20px;
+        #         text-align: center;
+        #         text-decoration: none;
+        #         display: inline-block;
+        #         font-size: 16px;
+        #         margin: 4px 2px;
+        #         transition-duration: 0.4s;
+        #         cursor: pointer;
+        #         border-radius: 10px;
+        #     }
+        #     QPushButton:hover {
+        #         background-color: white; 
+        #         color: black; 
+        #         border: 2px solid #696eb8;
+        #     }
+        # """)
 
-        main_layout.addLayout(line_button_layout)  # 메인 레이아웃에 새로운 버튼 레이아웃 추가
+        # main_layout.addLayout(line_button_layout)  # 메인 레이아웃에 새로운 버튼 레이아웃 추가
 
         new_button_layout = QHBoxLayout()
         new_button = QPushButton("haal")  # "New Button" 텍스트를 가진 QPushButton 생성
@@ -194,6 +194,7 @@ class MainWindow(QMainWindow):  # QMainWindow를 상속받아 MainWindow 클래�
             button = QPushButton(f"speed: {speed}")  # 속도 값을 가진 QPushButton 생성
             button.clicked.connect(lambda checked, s=speed: self.on_speed_button_clicked(s))  # 버튼 클릭 시 on_speed_button_clicked 메서드 호출
             speed_layout.addWidget(button)  # 버튼을 속도 버튼 레이아웃에 추가
+            
             # 버튼 스타일 설정
             button.setStyleSheet("""
                 QPushButton {
@@ -271,7 +272,7 @@ class MainWindow(QMainWindow):  # QMainWindow를 상속받아 MainWindow 클래�
     def on_open_yolo_button_clicked(self):  # Open YOLO 버튼 클릭 시 호출되는 메서드
         print("Open YOLO button clicked")  # 클릭된 버튼의 텍스트를 출력
         python_executable = sys.executable  # 현재 사용 중인 Python 실행 파일 경로
-        subprocess.Popen([python_executable, "arduinopyqt5yolo.py"])  # 현재 Python 실행 파일을 사용하여 스크립트 실행
+        subprocess.Popen([python_executable, "arduinopyqt5jadong.py"])  # 현재 Python 실행 파일을 사용하여 스크립트 실행
 
     def on_control_button_pressed(self, control):  # 버튼 누를 때 동작
         print(f"{control.capitalize()} button pressed")
@@ -297,10 +298,10 @@ class MainWindow(QMainWindow):  # QMainWindow를 상속받아 MainWindow 클래�
         python_executable = sys.executable  # 현재 사용 중인 Python 실행 파일 경로
         subprocess.Popen([python_executable, "arduinopyqt5LED.py"])  
 
-    def on_jadong_button_clicked(self):
-        print("jadong Button clicked")
-        python_executable = sys.executable  # 현재 사용 중인 Python 실행 파일 경로
-        subprocess.Popen([python_executable, "arduinopyqt5jadong.py"])  
+    # def on_jadong_button_clicked(self):
+    #     print("jadong Button clicked")
+    #     python_executable = sys.executable  # 현재 사용 중인 Python 실행 파일 경로
+    #     subprocess.Popen([python_executable, "arduinopyqt5jadong.py"])  
 
         
     def send_command_to_arduino(self, command):  # 제어 명령을 Arduino로 전송하는 메서드
@@ -327,21 +328,21 @@ class MainWindow(QMainWindow):  # QMainWindow를 상속받아 MainWindow 클래�
             print('정지')  # "정지" 출력
             urlopen('http://' + ip + "/action?go=stop")  # Arduino로 정지 명령 전송
 
-        elif command == "speed: 40":  #  
+        elif command == "speed40":  #  
             print('40')   
-            urlopen('http://' + ip + "/action?go=40") 
-        elif command == "speed: 50":  #  
+            urlopen('http://' + ip + "/action?go=speed40") 
+        elif command == "speed50":  #  
             print('50')   
-            urlopen('http://' + ip + "/action?go=50") 
-        elif command == "speed: 60":  #  
+            urlopen('http://' + ip + "/action?go=speed50") 
+        elif command == "speed60":  #  
             print('60')   # 올바른 출력 메시지로 수정
-            urlopen('http://' + ip + "/action?go=60") 
-        elif command == "speed: 80":  #  
+            urlopen('http://' + ip + "/action?go=speed60") 
+        elif command == "speed80":  #  
             print('80')   
-            urlopen('http://' + ip + "/action?go=80") 
-        elif command == "speed: 100":  #  
+            urlopen('http://' + ip + "/action?go=speed80") 
+        elif command == "speed100":  #  
             print('100')   
-            urlopen('http://' + ip + "/action?go=100")        
+            urlopen('http://' + ip + "/action?go=speed100")        
                     
     # def read_stream(self):  # 스트리밍 데이터를 읽는 메서드
     #     global thread_frame
