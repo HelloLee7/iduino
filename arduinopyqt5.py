@@ -76,29 +76,58 @@ class MainWindow(QMainWindow):  # QMainWindow를 상속받아 MainWindow 클래�
         new_button.clicked.connect(self.on_new_button_clicked)  # 버튼 클릭 시 on_new_button_clicked 메서드 호출
         new_button_layout.addWidget(new_button)  # 버튼을 레이아웃에 추가
         new_button.setStyleSheet("""
-                QPushButton {
-                    background-color: #373eab; 
-                    color: white; 
-                    border: none;
-                    padding: 10px 20px;
-                    text-align: center;
-                    text-decoration: none;
-                    display: inline-block;
-                    font-size: 16px;
-                    margin: 4px 2px;
-                    transition-duration: 0.4s;
-                    cursor: pointer;
-                    border-radius: 10px;
-                }
-                QPushButton:hover {
-                    background-color: white; 
-                    color: black; 
-                    border: 2px solid #696eb8;
-                }
-            """)  
+            QPushButton {
+                background-color: #373eab; 
+                color: white; 
+                border: none;
+                padding: 10px 20px;
+                text-align: center;
+                text-decoration: none;
+                display: inline-block;
+                font-size: 16px;
+                margin: 4px 2px;
+                transition-duration: 0.4s;
+                cursor: pointer;
+                border-radius: 10px;
+            }
+            QPushButton:hover {
+                background-color: white; 
+                color: black; 
+                border: 2px solid #696eb8;
+            }
+        """)
+
         main_layout.addLayout(new_button_layout)  # 메인 레이아웃에 새로운 버튼 레이아웃 추가
 
-        # Open YOLO 버튼 레이아웃 생성
+        # leds 버튼 레이아웃 생성 및 추가
+        led_button_layout = QHBoxLayout()
+        led_button = QPushButton("leds")  # "leds" 텍스트를 가진 QPushButton 생성
+        led_button.clicked.connect(self.on_led_button_clicked)  # 버튼 클릭 시 on_led_button_clicked 메서드 호출
+        led_button_layout.addWidget(led_button)  # 버튼을 레이아웃에 추가
+        led_button.setStyleSheet("""
+            QPushButton {
+                background-color: #373eab; 
+                color: white; 
+                border: none;
+                padding: 10px 20px;
+                text-align: center;
+                text-decoration: none;
+                display: inline-block;
+                font-size: 16px;
+                margin: 4px 2px;
+                transition-duration: 0.4s;
+                cursor: pointer;
+                border-radius: 10px;
+            }
+            QPushButton:hover {
+                background-color: white; 
+                color: black; 
+                border: 2px solid #696eb8;
+            }
+        """)
+        main_layout.addLayout(led_button_layout)  # 메인 레이아웃에 leds 버튼 레이아웃 추가
+
+        # Open YOLO 버튼 레이아웃 생성 및 추가
         openyolo_layout = QHBoxLayout()
         yolos = ["Open YOLO"]  # 제어 버튼에 사용할 명령 리스트
         for yolo in yolos:
@@ -125,8 +154,8 @@ class MainWindow(QMainWindow):  # QMainWindow를 상속받아 MainWindow 클래�
                     color: black; 
                     border: 2px solid #696eb8;
                 }
-            """)            
-        main_layout.addLayout(openyolo_layout)  # 레이아웃을 메인 레이아웃에 추가
+            """)
+        main_layout.addLayout(openyolo_layout)  # 메인 레이아웃에 Open YOLO 버튼 레이아웃 추가  # 레이아웃을 메인 레이아웃에 추가
 
         # 속도 버튼 레이아웃 생성
         speed_layout = QHBoxLayout()
@@ -235,9 +264,15 @@ class MainWindow(QMainWindow):  # QMainWindow를 상속받아 MainWindow 클래�
         subprocess.Popen([python_executable, "arduinopyqt5haar.py"])         
         # 새로운 버튼 클릭 시 수행할 동작을 여기에 추가하세요
 # 제어 명령을 Arduino로 전송하는 메서드 호출
+    def on_led_button_clicked(self):
+        print("LEd Button clicked")
+        python_executable = sys.executable  # 현재 사용 중인 Python 실행 파일 경로
+        subprocess.Popen([python_executable, "arduinopyqt5LED.py"])  
 
+
+        
     def send_command_to_arduino(self, command):  # 제어 명령을 Arduino로 전송하는 메서드
-        ip = '192.168.137.84'  # Arduino의 IP 주소
+        ip = '192.168.137.216'  # Arduino의 IP 주소
         if command == "forward":  # 명령이 "forward"인 경우
             print('전진')  # "전진" 출력
             urlopen('http://' + ip + "/action?go=forward")  # Arduino로 전진 명령 전송
