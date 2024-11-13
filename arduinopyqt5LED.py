@@ -1,27 +1,16 @@
 import serial
 import time
 
-try:
-    # 아두이노 시리얼 통신 설정
-    arduino = serial.Serial(port='COM4', baudrate=9600, timeout=.1)
-    time.sleep(2)  # 아두이노 리셋 대기
-    
-    def send_command(command):
-        arduino.write(command.encode('utf-8'))
-        arduino.flush()  # 버퍼 비우기
-        time.sleep(0.1)  # 명령 처리 대기
-    
-    # LED 상태 토글
-    while True:
-        send_command('l')  # LED 켜기
-        print("LED ON")
-        time.sleep(2)      # 2초 대기
-        send_command('0')  # LED 끄기
-        print("LED OFF")
-        time.sleep(2)      # 2초 대기
+# 시리얼 포트 설정 (포트 이름은 시스템에 따라 다를 수 있습니다)
+ser = serial.Serial('COM4', 9600)  # Windows의 경우 COM 포트 사용
+time.sleep(0.5)  # 아두이노 초기화 시간 대기
 
-except serial.SerialException as e:
-    print(f"시리얼 포트 연결 실패: {e}")
-finally:
-    if 'arduino' in locals():
-        arduino.close()
+# LED 켜기
+ser.write(b'1')
+time.sleep(0.5)  # 2초 대기
+
+# LED 끄기
+ser.write(b'0')
+time.sleep(0.5)  # 2초 대기
+
+ser.close()
