@@ -392,7 +392,25 @@ class MainWindow(QMainWindow):  # QMainWindow를 상속받아 MainWindow 클래�
         else:
             super().keyPressEvent(event)
 
+    def get_arduino_ip(self):
+        try:
+            arduino_ip = socket.gethostbyname(self.arduino_hostname)
+            print(f"Arduino IP 주소: {arduino_ip}")
+            return arduino_ip
+        except socket.error as e:
+            print(f"Arduino IP 주소를 가져오는 데 실패했습니다: {e}")
+            return None
 
+    def send_command_to_arduino(self, command):
+        self.arduino_ip = self.get_arduino_ip()  # 명령을 보낼 때마다 IP 주소 갱신
+        if not self.arduino_ip:
+            print("Arduino IP 주소를 찾을 수 없습니다.")
+            return
+        try:
+            urlopen(f'http://{self.arduino_ip}/action?go={command}')
+            print(f"명령 '{command}'를 Arduino({self.arduino_ip})로 전송했습니다.")
+        except Exception as e:
+            print(f"명령 '{command}' 전송에 실패했습니다: {e}")
 
 if __name__ == "__main__":  # 메인 함수
     app = QApplication(sys.argv)  # 애플리케이션 객체 생성

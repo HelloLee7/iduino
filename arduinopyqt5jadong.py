@@ -7,11 +7,15 @@ import threading
 import time
 import os
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
+from arduinoip import get_arduino_ip, send_command_to_arduino
 
-ip = '192.168.137.50'
-stream = urlopen('http://' + ip +':81/stream')
+arduino_ip = get_arduino_ip()
+
+# 필요한 곳에서 IP 사용
+print(f"Arduino IP 주소: {arduino_ip}")
+stream = urlopen('http://' + arduino_ip + ':81/stream')
 buffer = b''
-urlopen('http://' + ip + "/action?go=speed40")
+urlopen('http://' + arduino_ip + "/action?go=speed40")
 
 # YOLOv5 모델 정의
 model = torch.hub.load('ultralytics/yolov5', 'custom', path='best.pt')
@@ -47,11 +51,11 @@ def yolo_thread():
                     elif "slow" in label and conf > 0.3:
                         print("slow")
                         yolo_state = "go"
-                        urlopen('http://' + ip + "/action?go=speed40")
+                        urlopen('http://' + arduino_ip + "/action?go=speed40")
                     elif "speed50" in label and conf > 0.3:
                         print("speed50")
                         yolo_state = "go"
-                        urlopen('http://' + ip + "/action?go=speed60")
+                        urlopen('http://' + arduino_ip + "/action?go=speed60")
 
                     # 박스와 라벨 표시
                     color = [int(c) for c in random.choice(range(256), size=3)]
@@ -71,13 +75,13 @@ def image_process_thread():
     while True:
         if image_flag == 1:
             if car_state == "go" and yolo_state =="go":
-                urlopen('http://' + ip + "/action?go=forward")
+                urlopen('http://' + arduino_ip + "/action?go=forward")
             elif car_state == "right" and yolo_state =="go":
-                urlopen('http://' + ip + "/action?go=right")
+                urlopen('http://' + arduino_ip + "/action?go=right")
             elif car_state == "left" and yolo_state =="go":
-                urlopen('http://' + ip + "/action?go=left")
+                urlopen('http://' + arduino_ip + "/action?go=left")
             elif yolo_state =="stop":
-                urlopen('http://' + ip + "/action?go=stop")
+                urlopen('http://' + arduino_ip + "/action?go=stop")
                 
             image_flag = 0
             
@@ -157,7 +161,7 @@ while True:
 #     ser.write(b'1')  # LED 켜기
 #     ser.close() 
 
-urlopen('http://' + ip + "/action?go=stop")
+urlopen('http://' + arduino_ip + "/action?go=stop")
 cv2.destroyAllWindows()
 
 # main6-3-2.py

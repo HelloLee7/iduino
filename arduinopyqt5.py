@@ -286,7 +286,6 @@ class MainWindow(QMainWindow):  # QMainWindow를 상속받아 MainWindow 클래�
         print("Stop button released")
         self.send_command_to_arduino("stop")
 
-
     def on_speed_button_clicked(self, speed):  # 속도 버튼 클릭 시 호출되는 메서드
         print(f"Speed {speed} button clicked")  # 클릭된 버튼의 속도를 출력
         self.send_command_to_arduino(speed)        # 여기에 시리얼 포트를 통해 명령 전송 코드를 추가할 수 있습니다
@@ -312,16 +311,16 @@ class MainWindow(QMainWindow):  # QMainWindow를 상속받아 MainWindow 클래�
         ip = '192.168.137.50'  # Arduino의 IP 주소
         if command == "forward":  # 명령이 "forward"인 경우
             print('전진')  # "전진" 출력
-            urlopen('http://' + ip + "/action?go=forward")  # Arduino로 전진 명령 전송
+            urlopen('http://' + arduino_ip + "/action?go=forward")  # Arduino로 전진 명령 전송
         elif command == "left":  # 명령이 "left"인 경우
             print('왼쪽')  # "왼쪽" 출력
-            urlopen('http://' + ip + "/action?go=left")  # Arduino로 왼쪽 명령 전송
+            urlopen('http://' + arduino_ip + "/action?go=left")  # Arduino로 왼쪽 명령 전송
         elif command == "right":  # 명령이 "right"인 경우
             print('오른쪽')  # "오른쪽" 출력
-            urlopen('http://' + ip + "/action?go=right")  # Arduino로 오른쪽 명령 전송
+            urlopen('http://' + arduino_ip + "/action?go=right")  # Arduino로 오른쪽 명령 전송
         elif command == "backward":  # 명령이 "backward"인 경우
             print('후진')  # "후진" 출력
-            urlopen('http://' + ip + "/action?go=backward")  # Arduino로 후진 명령 전송
+            urlopen('http://' + arduino_ip + "/action?go=backward")  # Arduino로 후진 명령 전송
         # elif command == "Turn left":  # 명령이 "Turn left"인 경우
         #     print('왼쪽 회전')  # "왼쪽 회전" 출력
         #     urlopen('http://' + ip + "/action?go=turn_left")  # Arduino로 왼쪽 회전 명령 전송
@@ -330,23 +329,23 @@ class MainWindow(QMainWindow):  # QMainWindow를 상속받아 MainWindow 클래�
         #     urlopen('http://' + ip + "/action?go=turn_right")  # Arduino로 오른쪽 회전 명령 전송
         elif command == "stop":  # 명령이 "stop"인 경우
             print('정지')  # "정지" 출력
-            urlopen('http://' + ip + "/action?go=stop")  # Arduino로 정지 명령 전송
+            urlopen('http://' + arduino_ip + "/action?go=stop")  # Arduino로 정지 명령 전송
 
         elif command == "speed40":  #  
             print('40')   
-            urlopen('http://' + ip + "/action?go=speed40") 
+            urlopen('http://' + arduino_ip + "/action?go=speed40") 
         elif command == "speed50":  #  
             print('50')   
-            urlopen('http://' + ip + "/action?go=speed50") 
+            urlopen('http://' + arduino_ip + "/action?go=speed50") 
         elif command == "speed60":  #  
             print('60')   # 올바른 출력 메시지로 수정
-            urlopen('http://' + ip + "/action?go=speed60") 
+            urlopen('http://' + arduino_ip + "/action?go=speed60") 
         elif command == "speed80":  #  
             print('80')   
-            urlopen('http://' + ip + "/action?go=speed80") 
+            urlopen('http://' + arduino_ip + "/action?go=speed80") 
         elif command == "speed100":  #  
             print('100')   
-            urlopen('http://' + ip + "/action?go=speed100")        
+            urlopen('http://' + arduino_ip + "/action?go=speed100")        
                     
     # def read_stream(self):  # 스트리밍 데이터를 읽는 메서드
     #     global thread_frame

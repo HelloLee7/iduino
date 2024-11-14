@@ -7,11 +7,14 @@ from urllib.request import urlopen
 import threading
 import os
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
+from arduinoip import get_arduino_ip, send_command_to_arduino
+arduino_ip = get_arduino_ip()
 
-ip = '192.168.137.160'
-stream = urlopen('http://' + ip +':81/stream')
+# 필요한 곳에서 IP 사용
+print(f"Arduino IP 주소: {arduino_ip}")
+stream = urlopen('http://' + arduino_ip + ':81/stream')
 buffer = b''
-urlopen('http://' + ip + "/action?go=speed40")
+urlopen('http://' + arduino_ip + "/action?go=speed40")
 
 # YOLOv5 모델 정의
 model = torch.hub.load('ultralytics/yolov5', 'custom', path='best.pt')
@@ -81,7 +84,7 @@ while True:
         print("에러")
         pass
 
-urlopen('http://' + ip + "/action?go=stop")
+urlopen('http://' + arduino_ip + "/action?go=stop")
 cv2.destroyAllWindows()
 
 # main6-2-3.py

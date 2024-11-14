@@ -6,6 +6,7 @@ import numpy as np
 from urllib.request import urlopen
 import threading
 import os
+from arduinoip import get_arduino_ip, send_command_to_arduino
 
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
@@ -16,10 +17,13 @@ cascade_path = "haarcascade_frontalface_default.xml"
 face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + cascade_path)
 
 # IP 카메라 스트림 설정
-ip = '192.168.137.50'
-stream = urlopen('http://' + ip + ':81/stream')
+arduino_ip = get_arduino_ip()
+
+# 필요한 곳에서 IP 사용
+print(f"Arduino IP 주소: {arduino_ip}")
+stream = urlopen('http://' + arduino_ip + ':81/stream')
 buffer = b''
-urlopen('http://' + ip + "/action?go=speed40")
+urlopen('http://' + arduino_ip + "/action?go=speed40")
 
 # 얼굴 검출 활성화 여부
 detect_faces = True
