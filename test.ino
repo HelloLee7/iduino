@@ -340,11 +340,12 @@ void startCameraServer(){
 void setup() {
   WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0); //disable brownout detector
   
-  pinMode(IN_11, OUTPUT);
-  pinMode(IN_12, OUTPUT);
-  pinMode(IN_21, OUTPUT);
-  pinMode(IN_22, OUTPUT);
-  pinMode(LED_BUILTIN, OUTPUT); // LED 핀을 출력 모드로 설정
+  pinMode(IN_11,OUTPUT);
+  pinMode(IN_12,OUTPUT);
+  pinMode(IN_21,OUTPUT);
+  pinMode(IN_22,OUTPUT);
+  pinMode(LED_BUILTIN,OUTPUT);
+  Serial.begin(115200);
   Serial.setDebugOutput(false);
   
   //EEPROM 초기화
@@ -450,22 +451,7 @@ void setup() {
 }
 
 void loop() {
-  if (Serial.available() > 0) {
-    char command = Serial.read();
-    if (command == '1') {
-      digitalWrite(LED_BUILTIN, HIGH); // LED 켜기
-    } else if (command == '0') {
-      digitalWrite(LED_BUILTIN, LOW); // LED 끄기
-    } else if (command == 'F') {
-      car_forward(car_speed); // 모터 앞으로 이동
-    } else if (command == 'B') {
-      car_backward(car_speed); // 모터 뒤로 이동
-    } else if (command == 'L') {
-      car_turn_left(car_speed); // 모터 왼쪽으로 회전
-    } else if (command == 'R') {
-      car_turn_right(car_speed); // 모터 오른쪽으로 회전
-    }
-  }
+
 }
 
 String ip2Str(IPAddress ip){
@@ -476,20 +462,32 @@ String ip2Str(IPAddress ip){
   return s;
 }
 
+void Led_go(){
+  digitalWrite(LED_BUILTIN, HIGH);
+  delay(2000);
+  digitalWrite(LED_BUILTIN, LOW); 
+  delay(2000);
+  
+}
+
 void car_go(int speed){
   //오른쪽모터
-  digitalWrite(IN_11, HIGH);
-  analogWrite(IN_12, 0);
-  digitalWrite(IN_21, HIGH);
-  analogWrite(IN_22, speed);
+  digitalWrite(IN_11,LOW);
+  analogWrite(IN_12,speed);
+  
+  //왼쪽모터
+  digitalWrite(IN_21,HIGH);
+  analogWrite(IN_22,speed);
 }
 
 void car_back(int speed){
   //오른쪽모터
-  digitalWrite(IN_11, LOW);
-  analogWrite(IN_12, speed);
-  digitalWrite(IN_21, LOW);
-  analogWrite(IN_22, speed);
+  digitalWrite(IN_11,HIGH);
+  analogWrite(IN_12,speed);
+  
+  //왼쪽모터
+  digitalWrite(IN_21,LOW);
+  analogWrite(IN_22,speed);
 }
 
 void car_go_left(int speed){
@@ -512,16 +510,22 @@ void car_go_right(int speed){
   analogWrite(IN_22,speed);
 }
 
-void car_turn_left(int speed) {
-  digitalWrite(IN_11, LOW);
-  analogWrite(IN_12, speed);
-  digitalWrite(IN_21, LOW);
-  analogWrite(IN_22, speed);
+void car_turn_left(int speed){
+  //오른쪽모터
+  digitalWrite(IN_11,LOW);
+  analogWrite(IN_12,speed);
+  
+  //왼쪽모터
+  digitalWrite(IN_21,LOW);
+  analogWrite(IN_22,speed);
 }
 
-void car_turn_right(int speed) {
-  digitalWrite(IN_11, HIGH);
-  analogWrite(IN_12, speed);
-  digitalWrite(IN_21, HIGH);
-  analogWrite(IN_22, speed);
+void car_turn_right(int speed){
+  //오른쪽모터
+  digitalWrite(IN_11,HIGH);
+  analogWrite(IN_12,speed);
+  
+  //왼쪽모터
+  digitalWrite(IN_21,HIGH);
+  analogWrite(IN_22,speed);
 }

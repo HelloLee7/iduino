@@ -11,6 +11,9 @@ os.chdir(os.path.dirname(os.path.abspath(__file__)))
 import subprocess
 import torch
 import torchvision
+import socket
+import time
+
 
 # 전역 변수
 thread_frame = None
@@ -48,7 +51,8 @@ class YOLOWindow(QDialog):  # QDialog를 상속받아 YOLOWindow 클래스 정�
 class MainWindow(QMainWindow):  # QMainWindow를 상속받아 MainWindow 클래스 정의
     def __init__(self):  # 클래스 초기화 메서드
         super().__init__()  # 부모 클래스의 초기화 메서드 호출
-
+        self.arduino_hostname = 'arduino'  # Arduino의 mDNS 호스트 이름
+        self.arduino_ip = self.get_arduino_ip()
         self.setWindowTitle("Arduino Test") 
         self.setStyleSheet("""
             QWidget {
@@ -224,7 +228,7 @@ class MainWindow(QMainWindow):  # QMainWindow를 상속받아 MainWindow 클래�
         control_layout = QHBoxLayout()
 
         # 제어 버튼 생성 및 설정
-        controls = ["Turn left", "left", "forward", "backward", "stop", "right", "Turn right"]  # 제어 버튼에 사용할 명령 리스트
+        controls = ["left", "forward", "backward", "stop", "right"]  # 제어 버튼에 사용할 명령 리스트
 # 제어 버튼 생성 및 설정
         for control in controls:  # 각 명령에 대해 반복
             button = QPushButton(control)  # 명령을 가진 QPushButton 생성
@@ -318,12 +322,12 @@ class MainWindow(QMainWindow):  # QMainWindow를 상속받아 MainWindow 클래�
         elif command == "backward":  # 명령이 "backward"인 경우
             print('후진')  # "후진" 출력
             urlopen('http://' + ip + "/action?go=backward")  # Arduino로 후진 명령 전송
-        elif command == "Turn left":  # 명령이 "Turn left"인 경우
-            print('왼쪽 회전')  # "왼쪽 회전" 출력
-            urlopen('http://' + ip + "/action?go=turn_left")  # Arduino로 왼쪽 회전 명령 전송
-        elif command == "Turn right":  # 명령이 "Turn right"인 경우
-            print('오른쪽 회전')  # "오른쪽 회전" 출력
-            urlopen('http://' + ip + "/action?go=turn_right")  # Arduino로 오른쪽 회전 명령 전송
+        # elif command == "Turn left":  # 명령이 "Turn left"인 경우
+        #     print('왼쪽 회전')  # "왼쪽 회전" 출력
+        #     urlopen('http://' + ip + "/action?go=turn_left")  # Arduino로 왼쪽 회전 명령 전송
+        # elif command == "Turn right":  # 명령이 "Turn right"인 경우
+        #     print('오른쪽 회전')  # "오른쪽 회전" 출력
+        #     urlopen('http://' + ip + "/action?go=turn_right")  # Arduino로 오른쪽 회전 명령 전송
         elif command == "stop":  # 명령이 "stop"인 경우
             print('정지')  # "정지" 출력
             urlopen('http://' + ip + "/action?go=stop")  # Arduino로 정지 명령 전송
@@ -388,7 +392,25 @@ class MainWindow(QMainWindow):  # QMainWindow를 상속받아 MainWindow 클래�
         else:
             super().keyPressEvent(event)
 
+    def get_arduino_ip(self):
+        try:
+            arduino_ip = socket.gethostbyname(self.arduino_hostname)
+            print(f"Arduino IP 주소: {arduino_ip}")
+            return arduino_ip
+        except socket.error as e:
+            print(f"Arduino IP 주소를 가져오는 데 실패했습니다: {e}")
+            return None
 
+    def send_command_to_arduino(self, command):
+        self.arduino_ip = self.get_arduino_ip()  # 명령을 보낼 때마다 IP 주소 갱신
+        if not self.arduino_ip:
+            print("Arduino IP 주소를 찾을 수 없습니다.")
+            return
+        try:
+            urlopen(f'http://{self.arduino_ip}/action?go={command}')
+            print(f"명령 '{command}'를 Arduino({self.arduino_ip})로 전송했습니다.")
+        except Exception as e:
+            print(f"명령 '{command}' 전송에 실패했습니다: {e}")
 
 if __name__ == "__main__":  # 메인 함수
     app = QApplication(sys.argv)  # 애플리케이션 객체 생성
