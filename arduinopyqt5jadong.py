@@ -8,7 +8,7 @@ import time
 import os
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
-ip = '192.168.137.74'
+ip = '192.168.137.50'
 stream = urlopen('http://' + ip +':81/stream')
 buffer = b''
 urlopen('http://' + ip + "/action?go=speed40")

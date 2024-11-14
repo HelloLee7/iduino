@@ -15,5 +15,4 @@ else:
     ser.write(b'0')  # LED 끄기
 
 time.sleep(0.5)  # 대기 시간
-
 ser.close()

@@ -305,7 +305,7 @@ class MainWindow(QMainWindow):  # QMainWindow를 상속받아 MainWindow 클래�
 
         
     def send_command_to_arduino(self, command):  # 제어 명령을 Arduino로 전송하는 메서드
-        ip = '192.168.137.74'  # Arduino의 IP 주소
+        ip = '192.168.137.50'  # Arduino의 IP 주소
         if command == "forward":  # 명령이 "forward"인 경우
             print('전진')  # "전진" 출력
             urlopen('http://' + ip + "/action?go=forward")  # Arduino로 전진 명령 전송
